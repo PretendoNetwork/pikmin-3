@@ -5,7 +5,6 @@ import (
 
 	ranking_types "github.com/PretendoNetwork/nex-protocols-go/ranking/types"
 	"github.com/PretendoNetwork/pikmin-3/globals"
-	"github.com/PretendoNetwork/pikmin-3/types"
 )
 
 func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderParam *ranking_types.RankingOrderParam) (error, []*ranking_types.RankingRankData) {
@@ -34,15 +33,10 @@ func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderPara
 		rankingRankData.Order = uint32(row)
 		rankingRankData.Category = category
 
-		// * A custom type is needed because
-		// * Postgres doesn't support scanning
-		// * uint8 slices by default
-		var groups types.PQUInt8Array
-
 		err := rows.Scan(
 			&rankingRankData.PrincipalID,
 			&rankingRankData.Score,
-			&groups,
+			&rankingRankData.Groups,
 			&rankingRankData.Param,
 			&rankingRankData.CommonData,
 		)
@@ -52,7 +46,6 @@ func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderPara
 		}
 
 		if err == nil {
-			rankingRankData.Groups = groups.Value
 			rankings = append(rankings, rankingRankData)
 
 			row += 1

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	ranking_types "github.com/PretendoNetwork/nex-protocols-go/ranking/types"
-	"github.com/lib/pq"
 )
 
 func InsertRankingByPIDAndRankingScoreData(pid uint32, rankingScoreData *ranking_types.RankingScoreData) error {
@@ -28,7 +27,7 @@ func InsertRankingByPIDAndRankingScoreData(pid uint32, rankingScoreData *ranking
 		rankingScoreData.Score,
 		rankingScoreData.OrderBy,
 		rankingScoreData.UpdateMode,
-		pq.Array(rankingScoreData.Groups),
+		rankingScoreData.Groups,
 		rankingScoreData.Param,
 		make([]byte, 0),
 		now,

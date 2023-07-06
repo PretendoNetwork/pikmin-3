@@ -12,7 +12,7 @@ func initPostgres() {
 		score integer,
 		order_by integer,
 		update_mode integer,
-		groups integer[],
+		groups bytea,
 		param bigint,
 		common_data bytea,
 		created_at bigint

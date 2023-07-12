@@ -43,9 +43,10 @@ Make sure you have Docker installed on your system. This can be done using vario
 Once installed, execute the following to build:
 
 ```bash
-$ docker build -t pikmin3 .
-$ docker image prune --filter label=stage=builder
+$ docker build -t pikmin3 --build-arg BUILD_STRING=YOUR_BUILD_STRING_HERE .
+$ docker image prune --filter label=stage=builder -f
 ```
+Note: `--build-arg` flag/variable is optional.
 
 Create a `.env` file with all of the necessary environment variables set. The variable list is available below.
 

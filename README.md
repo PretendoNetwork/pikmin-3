@@ -37,6 +37,32 @@ $ make
 
 The server is now built to `build/pikmin-3` with the authentication server build string already set
 
+### Compiling and running using `docker`
+Make sure you have Docker installed on your system. This can be done using various instructions available online.
+
+Once installed, execute the following to build:
+
+```bash
+$ docker build -t pikmin3 .
+$ docker image prune --filter label=stage=builder
+```
+
+Create a `.env` file with all of the necessary environment variables set. The variable list is available below.
+
+Example:
+```
+PN_PIKMIN3_POSTGRES_URI=postgres://username:password@localhost/pikmin3?sslmode=disable
+PN_PIKMIN3_AUTHENTICATION_SERVER_PORT=61001
+...
+```
+
+Then, you can use the following command to run the image.
+```bash
+$ docker run --name pikmin3 --env-file .env -it pikmin3
+```
+
+Other tools and systems can also make use of this image, including Docker Compose and Portainer.
+
 ## Configuration
 All configuration options are handled via environment variables
 

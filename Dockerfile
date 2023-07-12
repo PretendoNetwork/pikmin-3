@@ -8,7 +8,8 @@ COPY go.* ./
 RUN go mod download
 
 COPY . ./
-RUN go build -ldflags "-X 'main.serverBuildString=pretendo.pikmin3.docker'" -v -o server
+ARG BUILD_STRING=pretendo.pikmin3.docker
+RUN go build -ldflags "-X 'main.serverBuildString=${BUILD_STRING}'" -v -o server
 
 # --- runner ---
 FROM alpine:3.17 as runner

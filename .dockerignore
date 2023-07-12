@@ -4,3 +4,4 @@ build
 log
 go.work
 *.test
+go.work.sum

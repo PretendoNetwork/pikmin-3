@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	pb "github.com/PretendoNetwork/grpc-go/account"
+	"github.com/PretendoNetwork/nex-go/v2"
+	"github.com/PretendoNetwork/nex-go/v2/types"
 	"github.com/PretendoNetwork/pikmin-3/database"
 	"github.com/PretendoNetwork/pikmin-3/globals"
 	"github.com/PretendoNetwork/plogger-go"
@@ -45,6 +47,9 @@ func init() {
 	} else {
 		globals.KerberosPassword = kerberosPassword
 	}
+
+	globals.AuthenticationServerAccount = nex.NewAccount(types.NewPID(1), "Quazal Authentication", globals.KerberosPassword)
+	globals.SecureServerAccount = nex.NewAccount(types.NewPID(2), "Quazal Rendez-Vous", globals.KerberosPassword)
 
 	if strings.TrimSpace(authenticationServerPort) == "" {
 		globals.Logger.Error("PN_PIKMIN3_AUTHENTICATION_SERVER_PORT environment variable not set")

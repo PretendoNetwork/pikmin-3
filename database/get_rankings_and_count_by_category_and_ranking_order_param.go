@@ -8,8 +8,8 @@ import (
 	"github.com/PretendoNetwork/pikmin-3/globals"
 )
 
-func GetRankingsAndCountByCategoryAndRankingOrderParam(category *types.PrimitiveU32, rankingOrderParam *ranking_types.RankingOrderParam) (*types.List[*ranking_types.RankingRankData], uint32, error) {
-	rankings := types.NewList[*ranking_types.RankingRankData]()
+func GetRankingsAndCountByCategoryAndRankingOrderParam(category types.UInt32, rankingOrderParam ranking_types.RankingOrderParam) (types.List[ranking_types.RankingRankData], uint32, error) {
+	rankings := types.NewList[ranking_types.RankingRankData]()
 
 	rows, err := Postgres.Query(`
 		SELECT
@@ -30,8 +30,8 @@ func GetRankingsAndCountByCategoryAndRankingOrderParam(category *types.Primitive
 	row := 1
 	for rows.Next() {
 		rankingRankData := ranking_types.NewRankingRankData()
-		rankingRankData.UniqueID.Value = 0
-		rankingRankData.Order.Value = uint32(row)
+		rankingRankData.UniqueID = 0
+		rankingRankData.Order = types.UInt32(row)
 		rankingRankData.Category = category
 
 		err := rows.Scan(
@@ -47,11 +47,11 @@ func GetRankingsAndCountByCategoryAndRankingOrderParam(category *types.Primitive
 		}
 
 		if err == nil {
-			rankings.Append(rankingRankData)
+			rankings = append(rankings, rankingRankData)
 
 			row += 1
 		}
 	}
 
-	return rankings, uint32(rankings.Length()), nil
+	return rankings, uint32(len(rankings)), nil
 }

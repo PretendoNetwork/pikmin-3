@@ -3,12 +3,13 @@ package database
 import (
 	"database/sql"
 
-	ranking_types "github.com/PretendoNetwork/nex-protocols-go/ranking/types"
+	"github.com/PretendoNetwork/nex-go/v2/types"
+	ranking_types "github.com/PretendoNetwork/nex-protocols-go/v2/ranking/types"
 	"github.com/PretendoNetwork/pikmin-3/globals"
 )
 
-func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderParam *ranking_types.RankingOrderParam) (error, []*ranking_types.RankingRankData) {
-	rankings := make([]*ranking_types.RankingRankData, 0, rankingOrderParam.Length)
+func GetRankingsAndCountByCategoryAndRankingOrderParam(category types.UInt32, rankingOrderParam ranking_types.RankingOrderParam) (types.List[ranking_types.RankingRankData], uint32, error) {
+	rankings := types.NewList[ranking_types.RankingRankData]()
 
 	rows, err := Postgres.Query(`
 		SELECT
@@ -23,14 +24,14 @@ func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderPara
 		rankingOrderParam.Offset,
 	)
 	if err != nil {
-		return err, rankings
+		return nil, 0, err
 	}
 
 	row := 1
 	for rows.Next() {
 		rankingRankData := ranking_types.NewRankingRankData()
 		rankingRankData.UniqueID = 0
-		rankingRankData.Order = uint32(row)
+		rankingRankData.Order = types.UInt32(row)
 		rankingRankData.Category = category
 
 		err := rows.Scan(
@@ -52,5 +53,5 @@ func GetRankingsByCategoryAndRankingOrderParam(category uint32, rankingOrderPara
 		}
 	}
 
-	return nil, rankings
+	return rankings, uint32(len(rankings)), nil
 }

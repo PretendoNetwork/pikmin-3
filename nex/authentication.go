@@ -3,35 +3,38 @@ package nex
 import (
 	"fmt"
 	"os"
+	"strconv"
 
-	nex "github.com/PretendoNetwork/nex-go"
+	nex "github.com/PretendoNetwork/nex-go/v2"
 	"github.com/PretendoNetwork/pikmin-3/globals"
 )
 
 var serverBuildString string
 
 func StartAuthenticationServer() {
-	globals.AuthenticationServer = nex.NewServer()
-	globals.AuthenticationServer.SetPRUDPVersion(1)
-	globals.AuthenticationServer.SetPRUDPProtocolMinorVersion(3)
-	globals.AuthenticationServer.SetDefaultNEXVersion(&nex.NEXVersion{
-		Major: 3,
-		Minor: 3,
-		Patch: 0,
-	})
-	globals.AuthenticationServer.SetKerberosPassword(globals.KerberosPassword)
-	globals.AuthenticationServer.SetAccessKey("f6accfc1")
+	globals.AuthenticationServer = nex.NewPRUDPServer()
 
-	globals.AuthenticationServer.On("Data", func(packet *nex.PacketV1) {
-		request := packet.RMCRequest()
+	globals.AuthenticationEndpoint = nex.NewPRUDPEndPoint(1)
+	globals.AuthenticationEndpoint.ServerAccount = globals.AuthenticationServerAccount
+	globals.AuthenticationEndpoint.AccountDetailsByPID = globals.AccountDetailsByPID
+	globals.AuthenticationEndpoint.AccountDetailsByUsername = globals.AccountDetailsByUsername
+	globals.AuthenticationServer.BindPRUDPEndPoint(globals.AuthenticationEndpoint)
+
+	globals.AuthenticationServer.LibraryVersions.SetDefault(nex.NewLibraryVersion(3, 3, 0))
+	globals.AuthenticationServer.AccessKey = "f6accfc1"
+
+	globals.AuthenticationEndpoint.OnData(func(packet nex.PacketInterface) {
+		request := packet.RMCMessage()
 
 		fmt.Println("==PIKMIN 3 - Auth==")
-		fmt.Printf("Protocol ID: %#v\n", request.ProtocolID())
-		fmt.Printf("Method ID: %#v\n", request.MethodID())
+		fmt.Printf("Protocol ID: %#v\n", request.ProtocolID)
+		fmt.Printf("Method ID: %#v\n", request.MethodID)
 		fmt.Println("===============")
 	})
 
 	registerCommonAuthenticationServerProtocols()
 
-	globals.AuthenticationServer.Listen(fmt.Sprintf(":%s", os.Getenv("PN_PIKMIN3_AUTHENTICATION_SERVER_PORT")))
+	port, _ := strconv.Atoi(os.Getenv("PN_PIKMIN3_AUTHENTICATION_SERVER_PORT"))
+
+	globals.AuthenticationServer.Listen(port)
 }
